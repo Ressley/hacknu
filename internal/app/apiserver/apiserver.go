@@ -57,9 +57,11 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/login", controllers.Login).Methods("POST")
 	s.router.HandleFunc("/download", controllers.DownloadFile).Methods("GET")
 	s.router.HandleFunc("/upload", controllers.UploadFile).Methods("POST")
-	s.router.HandleFunc("/community/create", controllers.CreateCommunity).Methods("POST")
+	s.router.HandleFunc("/community", controllers.CreateCommunity).Methods("POST")
 	s.router.HandleFunc("/follow", controllers.Follow).Methods("POST")
 	s.router.HandleFunc("/unfollow", controllers.Unfollow).Methods("POST")
+	s.router.HandleFunc("/event", controllers.CreateEvent).Methods("POST")
+	s.router.HandleFunc("/event", controllers.DeleteEvent).Methods("DELETE")
 
 }
 

@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -28,8 +27,10 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 	var account models.Account
 	authHeader, _ := middleware.FromAuthHeader(request)
 
-	json.Unmarshal([]byte((request.FormValue("json"))), &community)
-	request.ParseMultipartForm(10 << 20)
+	json.NewDecoder(request.Body).Decode(&community)
+
+	//json.Unmarshal([]byte((request.FormValue("json"))), &community)
+	//request.ParseMultipartForm(10 << 20)
 
 	err = accountCollection.FindOne(ctx, bson.M{"token": authHeader}).Decode(&account)
 	if err != nil {
@@ -38,7 +39,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	file, handler, err := request.FormFile("photo")
+	/*file, handler, err := request.FormFile("photo")
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte(`Error Retrieving the File `))
@@ -58,7 +59,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte(`Error ` + err.Error()))
 		return
-	}
+	}*/
 	user, err = services.GetUserOneByUserID(&account.User_id)
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
@@ -66,7 +67,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	community.Photo = &fileid
+	//	community.Photo = &fileid
 	//community.City = user.City
 	community.Participants = append(community.Participants, user.User_id)
 	community.Admin = &user.User_id

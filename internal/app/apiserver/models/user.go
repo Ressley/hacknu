@@ -11,6 +11,7 @@ type User struct {
 	Last_name  *string            `json:"last_name" validate:"required,min=2,max=100"`
 	Number     *string            `bson:"number, omitempty"`
 	Photo      *string            `bson:"photo, omitempty"`
+	Events     []string           `bson:"events, omitempty"`
 	Followers  []string           `bson:"followers, omitempty"`
 	Followed   []string           `bson:"followed, omitempty"`
 }

@@ -14,6 +14,7 @@ import (
 
 var client, err = helpers.GetMongoClient()
 var userCollection *mongo.Collection = client.Database(helpers.DB).Collection(helpers.USERS)
+var accountCollection *mongo.Collection = client.Database(helpers.DB).Collection(helpers.ACCOUNTS)
 
 func GetMongoClient() (*mongo.Client, error) {
 	return client, err
@@ -81,11 +82,21 @@ func UpdateUserOne(user *models.User) error {
 	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
 		primitive.E{Key: "first_name", Value: user.First_name},
 		primitive.E{Key: "last_name", Value: user.Last_name},
+		primitive.E{Key: "events", Value: user.Events},
+		primitive.E{Key: "followers", Value: user.Followers},
+		primitive.E{Key: "followed", Value: user.Followed},
 		primitive.E{Key: "number", Value: user.Number},
 		primitive.E{Key: "photo", Value: user.Photo},
 	}}}
 
 	_, err = userCollection.UpdateOne(ctx, filter, updater)
+	if err != nil {
+		return err
+	}
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "login", Value: user.Number},
+	}}}
+	_, err = accountCollection.UpdateOne(ctx, filter, updater)
 	if err != nil {
 		return err
 	}

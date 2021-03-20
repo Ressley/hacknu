@@ -79,10 +79,35 @@ func CreateEvent(response http.ResponseWriter, request *http.Request) {
 	event.Admin = &user.User_id
 	event.ID = primitive.NewObjectID()
 
-	err = services.CreateEvent(&event)
+	eventID, err := services.CreateEvent(&event)
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte(`you allready have this community`))
+		return
+	}
+	user.Events = append(user.Events, eventID.InsertedID.(primitive.ObjectID).Hex())
+	err = services.UpdateUserOne(&user)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`you allready have this community`))
+		return
+	}
+}
+
+func DeleteEvent(response http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	eventID := query.Get("eventid")
+
+	event, err := services.GetEventByID(&eventID)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
+		return
+	}
+	err = services.DeleteEvent(event.ID.Hex())
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
 		return
 	}
 }

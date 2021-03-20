@@ -10,6 +10,7 @@ type Event struct {
 	City         *string            `bson:"city: omitempty"`
 	Type         *Community         `bson:"type, omitempty"`
 	TypeName     *string            `bson:"typeName, omitempty"`
+	Description  *string            `bson:"description, omitempty"`
 	Participants []string           `bson:"participants, omitempty"`
 	Admin        *string            `bson:"admin, omitempty"`
 }

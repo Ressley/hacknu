@@ -8,6 +8,5 @@ type Community struct {
 	Name         *string            `bson:"name, omitempty"`
 	City         *string            `bson:"city, omitempty"`
 	Participants []string           `bson:"participants, omitempty"`
-	Type         *string            `bson:"type, omitempty"`
 	Admin        *string            `bson:"admin, omitempty"`
 }
