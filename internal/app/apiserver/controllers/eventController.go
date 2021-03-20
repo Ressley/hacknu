@@ -111,3 +111,38 @@ func DeleteEvent(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 }
+
+func GetEvent(response http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	eventID := query.Get("eventid")
+	var community models.Community
+	if eventID != "" {
+		event, err := services.GetEventByID(&eventID)
+		if err != nil {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
+			return
+		}
+		json.NewEncoder(response).Encode(event)
+		return
+	}
+	json.NewDecoder(request.Body).Decode(&community)
+	if *community.Name == "/All" {
+		event, err := services.GetEventAll()
+		if err != nil {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
+			return
+		}
+		json.NewEncoder(response).Encode(event)
+		return
+	}
+	event, err := services.GetCommunityByFilter(community.Name)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
+		return
+	}
+	json.NewEncoder(response).Encode(event)
+	return
+}

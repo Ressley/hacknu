@@ -16,7 +16,7 @@ var communityCollection *mongo.Collection = client.Database(helpers.DB).Collecti
 
 func CreateCommunity(community *models.Community) error {
 	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
-	_, err = GetCommunityByNameAndAdmin(community.Name, community.Admin)
+	_, err = GetCommunityByName(community.Name)
 	if err == nil {
 		return errors.New("community allready exist")
 	}

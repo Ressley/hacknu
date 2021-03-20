@@ -62,6 +62,7 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/unfollow", controllers.Unfollow).Methods("POST")
 	s.router.HandleFunc("/event", controllers.CreateEvent).Methods("POST")
 	s.router.HandleFunc("/event", controllers.DeleteEvent).Methods("DELETE")
+	s.router.HandleFunc("/event", controllers.GetEvent).Methods("GET")
 
 }
 

@@ -23,7 +23,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
 
 	var community models.Community
-	var user models.User
+	//var user models.User
 	var account models.Account
 	authHeader, _ := middleware.FromAuthHeader(request)
 
@@ -60,7 +60,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 		response.Write([]byte(`Error ` + err.Error()))
 		return
 	}*/
-	user, err = services.GetUserOneByUserID(&account.User_id)
+	_, err = services.GetUserOneByUserID(&account.User_id)
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte(`Error ` + err.Error()))
@@ -69,8 +69,8 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 
 	//	community.Photo = &fileid
 	//community.City = user.City
-	community.Participants = append(community.Participants, user.User_id)
-	community.Admin = &user.User_id
+	//community.Participants = append(community.Participants, user.User_id)
+	//community.Admin = &user.User_id
 
 	err = services.CreateCommunity(&community)
 	if err != nil {

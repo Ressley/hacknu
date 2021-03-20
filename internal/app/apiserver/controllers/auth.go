@@ -138,5 +138,4 @@ func Login(response http.ResponseWriter, request *http.Request) {
 
 	helpers.UpdateAllTokens(jwtToken, refreshToken, dbAccount.User_id)
 	response.Write([]byte(`{"token" : "` + jwtToken + `"}`))
-	response.Write([]byte(`{"id" : "` + dbAccount.ID.Hex() + `"}`))
 }

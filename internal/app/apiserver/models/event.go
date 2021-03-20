@@ -13,4 +13,5 @@ type Event struct {
 	Description  *string            `bson:"description, omitempty"`
 	Participants []string           `bson:"participants, omitempty"`
 	Admin        *string            `bson:"admin, omitempty"`
+	Time         *string            `bson:"time, omitempty"`
 }

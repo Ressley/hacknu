@@ -78,3 +78,18 @@ func DeleteEvent(id string) error {
 	}
 	return nil
 }
+
+func GetCommunityByFilter(name *string) ([]models.Event, error) {
+	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
+	result := []models.Event{}
+	filter := bson.D{{Key: "type.name", Value: name}}
+
+	cursor, err := eventCollection.Find(ctx, filter)
+
+	err = cursor.All(ctx, &result)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+
+}
