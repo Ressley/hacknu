@@ -18,6 +18,7 @@ const (
 	ACCOUNTS         = "Accounts"
 	USERS            = "Users"
 	COMMUNITY        = "Community"
+	EVENT            = "Event"
 
 	PHOTO_DB     = "HackNUPhoto"
 	FS_FILES     = "fs.files"

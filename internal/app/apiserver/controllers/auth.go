@@ -96,13 +96,6 @@ func SignUp(response http.ResponseWriter, request *http.Request) {
 		response.Write([]byte(`{"message":"` + err.Error() + `"}`))
 		return
 	}
-
-	/*err = role.InsertUser(&user.User_id)
-	if err != nil {
-		response.WriteHeader(http.StatusMethodNotAllowed)
-		response.Write([]byte(`{"message":"` + err.Error() + `"}`))
-		return
-	}*/
 	json.NewEncoder(response).Encode(result)
 }
 

@@ -67,7 +67,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 	}
 
 	community.Photo = &fileid
-	community.City = user.City
+	//community.City = user.City
 	community.Participants = append(community.Participants, user.User_id)
 	community.Admin = &user.User_id
 

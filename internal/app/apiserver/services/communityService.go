@@ -16,7 +16,7 @@ var communityCollection *mongo.Collection = client.Database(helpers.DB).Collecti
 
 func CreateCommunity(community *models.Community) error {
 	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
-	_, err = GetCommunityByName(community.Name, community.Admin)
+	_, err = GetCommunityByNameAndAdmin(community.Name, community.Admin)
 	if err == nil {
 		return errors.New("community allready exist")
 	}
@@ -28,10 +28,23 @@ func CreateCommunity(community *models.Community) error {
 	return nil
 }
 
-func GetCommunityByName(name *string, admin *string) (models.Community, error) {
+func GetCommunityByNameAndAdmin(name *string, admin *string) (models.Community, error) {
 	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
 	result := models.Community{}
 	filter := bson.D{{Key: "name", Value: name}, {Key: "admin", Value: admin}}
+
+	err = communityCollection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+
+}
+
+func GetCommunityByName(name *string) (models.Community, error) {
+	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
+	result := models.Community{}
+	filter := bson.D{{Key: "name", Value: name}}
 
 	err = communityCollection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {

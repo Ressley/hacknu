@@ -103,3 +103,92 @@ func DeleteUserOne(id *primitive.ObjectID) error {
 	return nil
 
 }
+
+func Follow(userID *string, followerID *string) error {
+	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
+	user, err := GetUserOneByUserID(userID)
+	if err != nil {
+		return err
+	}
+	follower, err := GetUserOneByUserID(followerID)
+	if err != nil {
+		return err
+	}
+	if _, contains := Contains(user.Followers, followerID); contains {
+		return errors.New("Allready followed")
+	}
+	user.Followers = append(user.Followers, *followerID)
+	follower.Followed = append(follower.Followed, *userID)
+
+	filter := bson.D{{Key: "user_id", Value: userID}}
+	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "followers", Value: user.Followers},
+	}}}
+	_, err = userCollection.UpdateOne(ctx, filter, updater)
+	if err != nil {
+		return errors.New("Cannot Follow")
+	}
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "followed", Value: follower.Followed},
+	}}}
+	filter = bson.D{{Key: "user_id", Value: follower.User_id}}
+	_, err = userCollection.UpdateOne(ctx, filter, updater)
+	if err != nil {
+		return errors.New("Cannot Follow")
+	}
+	return nil
+}
+
+func Unfollow(userID *string, followerID *string) error {
+	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
+	user, err := GetUserOneByUserID(userID)
+	if err != nil {
+		return err
+	}
+	follower, err := GetUserOneByUserID(followerID)
+	if err != nil {
+		return err
+	}
+	i, contains := Contains(user.Followers, followerID)
+	if !contains {
+		return errors.New("not followed")
+	}
+
+	DeleteFollow(user.Followers, i)
+	i, _ = Contains(follower.Followed, userID)
+	DeleteFollow(follower.Followed, i)
+
+	filter := bson.D{{Key: "user_id", Value: userID}}
+	updater := bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "followers", Value: user.Followers},
+	}}}
+	_, err = userCollection.UpdateOne(ctx, filter, updater)
+	if err != nil {
+		return errors.New("Cannot Follow")
+	}
+	updater = bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "followed", Value: follower.Followed},
+	}}}
+	filter = bson.D{{Key: "user_id", Value: follower.User_id}}
+	_, err = userCollection.UpdateOne(ctx, filter, updater)
+	if err != nil {
+		return errors.New("Cannot Follow")
+	}
+	return nil
+}
+
+func DeleteFollow(array []string, i int) {
+	array[i] = array[len(array)-1]
+	array[len(array)-1] = ""
+	array = array[:len(array)-1]
+}
+
+func Contains(array []string, element *string) (int, bool) {
+	var i int
+	for i := range array {
+		if array[i] == *element {
+			return i, true
+		}
+	}
+	return i, false
+}
