@@ -4,9 +4,11 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+
+	"github.com/Ressley/hacknu/internal/app/apiserver/helpers"
 )
 
-func IsAdmin(response http.ResponseWriter, request *http.Request) (bool, error) {
+/*func IsAdmin(response http.ResponseWriter, request *http.Request) (bool, error) {
 	err := Authentication(response, request)
 	if err != nil {
 		return false, err
@@ -17,7 +19,7 @@ func IsAdmin(response http.ResponseWriter, request *http.Request) (bool, error) 
 		return false, err
 	}
 	return true, nil
-}
+}*/
 
 func Authentication(response http.ResponseWriter, request *http.Request) error {
 	response.Header().Set("Content-Type", "application/json")

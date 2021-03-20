@@ -38,11 +38,11 @@ func UploadFile(filename string, data []byte) (string, error) {
 
 	err = hashedPhotoCollection.FindOne(ctx, bson.D{{Key: "hash", Value: hash}}).Decode(&result)
 	if err == nil {
-		return hash, nil
+		return *result.Fileid, nil
 	}
 
 	bucket, err := gridfs.NewBucket(
-		client.Database("Photo"),
+		client.Database("HackNUPhoto"),
 	)
 	if err != nil {
 		return "", err
@@ -90,7 +90,7 @@ func DownloadFile(id string) ([]byte, error) {
 	}
 
 	bucket, _ := gridfs.NewBucket(
-		client.Database("Photo"),
+		client.Database("HackNUPhoto"),
 	)
 	var buf bytes.Buffer
 	_, _err = bucket.DownloadToStream(fileID, &buf)

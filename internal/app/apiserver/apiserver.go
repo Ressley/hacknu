@@ -55,6 +55,10 @@ func (s *APIserver) configureRouter() {
 
 	s.router.HandleFunc("/signup", controllers.SignUp).Methods("POST")
 	s.router.HandleFunc("/login", controllers.Login).Methods("POST")
+	s.router.HandleFunc("/download", controllers.DownloadFile).Methods("GET")
+	s.router.HandleFunc("/upload", controllers.UploadFile).Methods("POST")
+	s.router.HandleFunc("/community/create", controllers.CreateCommunity).Methods("POST")
+
 }
 
 func (s *APIserver) configureStore() error {
@@ -71,14 +75,3 @@ func (s *APIserver) handleSignup() http.HandlerFunc {
 		io.WriteString(w, "henlo")
 	}
 }
-
-/*
-func (s *APIserver) handleSignin() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		err := middleware.Authentication(w, r)
-		if err != nil {
-			return
-		}
-		io.WriteString(w, "auth")
-	}
-}*/

@@ -28,7 +28,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 	var account models.Account
 	authHeader, _ := middleware.FromAuthHeader(request)
 
-	json.Unmarshal([]byte((request.FormValue("Json"))), &community)
+	json.Unmarshal([]byte((request.FormValue("json"))), &community)
 	request.ParseMultipartForm(10 << 20)
 
 	err = accountCollection.FindOne(ctx, bson.M{"token": authHeader}).Decode(&account)
@@ -38,7 +38,7 @@ func CreateCommunity(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	file, handler, err := request.FormFile("Photo")
+	file, handler, err := request.FormFile("photo")
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte(`Error Retrieving the File `))

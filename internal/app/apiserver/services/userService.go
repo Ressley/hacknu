@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/Ressley/hacknu/internal/app/apiserver/helpers"
@@ -52,7 +51,6 @@ func GetUserOneByID(id *primitive.ObjectID) (models.User, error) {
 }
 
 func GetUserOneByUserID(uid *string) (models.User, error) {
-	log.Print(*uid)
 	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
 	result := models.User{}
 	filter := bson.D{{Key: "user_id", Value: uid}}

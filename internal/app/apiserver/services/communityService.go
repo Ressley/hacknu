@@ -21,7 +21,7 @@ func CreateCommunity(community *models.Community) error {
 		return errors.New("community allready exist")
 	}
 	community.ID = primitive.NewObjectID()
-	_, err = userCollection.InsertOne(ctx, community)
+	_, err = communityCollection.InsertOne(ctx, community)
 	if err != nil {
 		return err
 	}
