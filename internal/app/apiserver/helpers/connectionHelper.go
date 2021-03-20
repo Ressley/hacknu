@@ -24,6 +24,7 @@ const (
 	DB               = "HackNUDB"
 	ACCOUNTS         = "Accounts"
 	USERS            = "Users"
+	COMMUNITY        = "Community"
 
 	PHOTO_DB     = "Photo"
 	FS_FILES     = "fs.files"
