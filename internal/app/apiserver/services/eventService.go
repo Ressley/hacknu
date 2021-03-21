@@ -91,15 +91,8 @@ func GetCommunityByFilter(name *string, account *models.Account) ([]models.Event
 	if len(user.Followed) == 0 {
 		return result, nil
 	}
-	//filter := bson.M{"admin": bson.M{"$in": user.Followed}}
 
-	//	for i := range user.Followed {
-	//
-	//	}
-
-	// bson.M{"type.name": name}
-	filter := bson.M{"$and": []bson.M{bson.M{"admin": bson.M{"$in": user.Followed}}, bson.M{"type.name": name}}} //, bson.M{"type.name": bson.M{"$in": user.Followed}}}
-	//filter = bson.M{"type.name": bson.M{"$in": user.Followed}}
+	filter := bson.M{"$and": []bson.M{bson.M{"admin": bson.M{"$in": user.Followed}}, bson.M{"type.name": name}}}
 	cursor, err := eventCollection.Find(ctx, filter)
 	if err != nil {
 		return result, err

@@ -60,9 +60,9 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/community", controllers.CreateCommunity).Methods("POST")
 	s.router.HandleFunc("/follow", controllers.Follow).Methods("POST")
 	s.router.HandleFunc("/unfollow", controllers.Unfollow).Methods("POST")
-	s.router.HandleFunc("/event", controllers.CreateEvent).Methods("POST")
+	s.router.HandleFunc("/event/create", controllers.CreateEvent).Methods("POST")
 	s.router.HandleFunc("/event", controllers.DeleteEvent).Methods("DELETE")
-	s.router.HandleFunc("/event", controllers.GetEvent).Methods("GET")
+	s.router.HandleFunc("/event", controllers.GetEvent).Methods("POST")
 	s.router.HandleFunc("/mypage", controllers.GetUser).Methods("GET")
 
 }
