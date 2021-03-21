@@ -92,6 +92,23 @@ func CreateEvent(response http.ResponseWriter, request *http.Request) {
 }
 
 func DeleteEvent(response http.ResponseWriter, request *http.Request) {
+	err := middleware.Authentication(response, request)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`Error ` + err.Error()))
+		return
+	}
+	response.Header().Set("Content-Type", "application/json")
+	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
+	var account models.Account
+	authHeader, _ := middleware.FromAuthHeader(request)
+
+	err = accountCollection.FindOne(ctx, bson.M{"token": authHeader}).Decode(&account)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`{"message":"` + " user not found" + `"}`))
+		return
+	}
 	query := request.URL.Query()
 	eventID := query.Get("eventid")
 
@@ -101,6 +118,13 @@ func DeleteEvent(response http.ResponseWriter, request *http.Request) {
 		response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
 		return
 	}
+
+	if event.Admin != &account.User_id {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`{"Error":"you are not admin"}`))
+		return
+	}
+
 	err = services.DeleteEvent(event.ID.Hex())
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
@@ -110,6 +134,25 @@ func DeleteEvent(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetEvent(response http.ResponseWriter, request *http.Request) {
+	err := middleware.Authentication(response, request)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`Error ` + err.Error()))
+		return
+	}
+
+	response.Header().Set("Content-Type", "application/json")
+	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
+	var account models.Account
+	authHeader, _ := middleware.FromAuthHeader(request)
+
+	err = accountCollection.FindOne(ctx, bson.M{"token": authHeader}).Decode(&account)
+	if err != nil {
+		response.WriteHeader(http.StatusMethodNotAllowed)
+		response.Write([]byte(`{"message":"` + " user not found" + `"}`))
+		return
+	}
+
 	query := request.URL.Query()
 	eventID := query.Get("eventid")
 	var community models.Community
@@ -134,7 +177,7 @@ func GetEvent(response http.ResponseWriter, request *http.Request) {
 		json.NewEncoder(response).Encode(event)
 		return
 	}
-	event, err := services.GetCommunityByFilter(community.Name)
+	event, err := services.GetCommunityByFilter(community.Name, &account)
 	if err != nil {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		response.Write([]byte(`{"Error":"event with ` + eventID + ` id does not exist"}`))
