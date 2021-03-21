@@ -38,25 +38,23 @@ func CreateEvent(response http.ResponseWriter, request *http.Request) {
 	}
 
 	file, handler, err := request.FormFile("photo")
-	if err != nil {
-		response.WriteHeader(http.StatusMethodNotAllowed)
-		response.Write([]byte(`Error Retrieving the File `))
-		response.Write([]byte(`Error ` + err.Error()))
-		return
-	}
-	defer file.Close()
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		response.WriteHeader(http.StatusMethodNotAllowed)
-		response.Write([]byte(`Error ` + err.Error()))
-		return
-	}
+	if err == nil {
 
-	fileid, err := services.UploadFile(handler.Filename, fileBytes)
-	if err != nil {
-		response.WriteHeader(http.StatusMethodNotAllowed)
-		response.Write([]byte(`Error ` + err.Error()))
-		return
+		defer file.Close()
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(`Error ` + err.Error()))
+			return
+		}
+
+		fileid, err := services.UploadFile(handler.Filename, fileBytes)
+		if err != nil {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(`Error ` + err.Error()))
+			return
+		}
+		event.Photo = &fileid
 	}
 	user, err = services.GetUserOneByUserID(&account.User_id)
 	if err != nil {
@@ -72,7 +70,6 @@ func CreateEvent(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	event.Photo = &fileid
 	//event.City = user.City
 	event.Participants = append(event.Participants, user.User_id)
 	event.Type = &communityType
