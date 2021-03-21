@@ -115,13 +115,13 @@ func SignUp(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	result, err := accountCollection.InsertOne(ctx, account)
+	_, err = accountCollection.InsertOne(ctx, account)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(`{"message":"` + err.Error() + `"}`))
 		return
 	}
-	json.NewEncoder(response).Encode(result)
+	response.Write([]byte(`{"token" : "` + token + `"}`))
 }
 
 func Login(response http.ResponseWriter, request *http.Request) {
