@@ -20,7 +20,7 @@ func GetMongoClient() (*mongo.Client, error) {
 	return client, err
 }
 
-func CreateUser(account *models.Account) error {
+func CreateUser(account *models.Account, fileid *string) error {
 	var ctx, _ = context.WithTimeout(context.TODO(), 100*time.Second)
 	_, err = GetUserOneByNumber(account.Login)
 	if err == nil {
@@ -31,6 +31,7 @@ func CreateUser(account *models.Account) error {
 		Last_name:  account.Last_name,
 		Number:     account.Login,
 		User_id:    account.User_id,
+		Photo:      fileid,
 	}
 	user.ID = primitive.NewObjectID()
 	_, err = userCollection.InsertOne(ctx, user)

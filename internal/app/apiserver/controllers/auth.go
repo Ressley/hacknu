@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -65,12 +66,36 @@ func SignUp(response http.ResponseWriter, request *http.Request) {
 		Password:   &nullPassword,
 	}
 
-	json.NewDecoder(request.Body).Decode(&account)
+	json.Unmarshal([]byte((request.FormValue("json"))), &account)
+	request.ParseMultipartForm(10 << 20)
+
+	//json.NewDecoder(request.Body).Decode(&account)
 
 	if *account.Last_name == "" || *account.First_name == "" || *account.Login == "" || *account.Password == "" {
 		response.WriteHeader(http.StatusUnprocessableEntity)
 		response.Write([]byte(`{"message":"` + "FirstName, LastName, Login and Password cannot be null" + `"}`))
 		return
+	}
+
+	var fileid string
+
+	file, handler, err := request.FormFile("photo")
+	if err == nil {
+
+		defer file.Close()
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(`Error ` + err.Error()))
+			return
+		}
+
+		fileid, err = services.UploadFile(handler.Filename, fileBytes)
+		if err != nil {
+			response.WriteHeader(http.StatusMethodNotAllowed)
+			response.Write([]byte(`Error ` + err.Error()))
+			return
+		}
 	}
 
 	*account.Password = HashPassword(*account.Password)
@@ -83,7 +108,7 @@ func SignUp(response http.ResponseWriter, request *http.Request) {
 	account.Token = &token
 	account.Refresh_token = &refreshToken
 
-	err = services.CreateUser(&account)
+	err = services.CreateUser(&account, &fileid)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(`{"message":"` + err.Error() + `"}`))
